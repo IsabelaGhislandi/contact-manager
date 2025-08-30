@@ -3,3 +3,4 @@ build
 .env
 README.md
 coverage
+.gitignore
