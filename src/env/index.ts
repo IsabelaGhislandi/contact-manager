@@ -4,6 +4,7 @@ import { z } from 'zod'
 const envSchema = z.object({
     NODE_ENV: z.enum(['dev', 'prod']).default('dev'),
     PORT: z.coerce.number().default(3333),
+    DATABASE_URL: z.string().default("postgresql://postgres:postgres@localhost:5432/contact_manager?schema=public"),
 })
 
 const _env = envSchema.safeParse(process.env)

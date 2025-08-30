@@ -12,7 +12,7 @@ const options = {
         description: "",
       },
     },
-    //apis: ["./routes/*.ts"], // arquivos onde vai documentar as rotas
+    apis: ["./src/routes/*.ts"],
   };
   
   const swaggerSpec = swaggerJsdoc(options);

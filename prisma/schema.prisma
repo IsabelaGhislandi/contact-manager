@@ -13,11 +13,36 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Contact {
-  id        String   @id @default(uuid())
+model User {
+  id        String    @id @default(uuid())
   name      String
-  email     String?
-  phone     String[]
+  email     String    @unique
+  password  String
+  contacts  Contact[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Contact {
+  id        String    @id @default(uuid())
+  name      String
+  address   String
+  email     String    @unique
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  phones    Phone[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+model Phone {
+  id        String   @id @default(uuid())
+  number    String
+  contact   Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  contactId String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([contactId, number])
 }
