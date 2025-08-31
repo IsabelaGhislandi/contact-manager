@@ -1,4 +1,4 @@
-import { GetContactUseCase } from "../contacts/get-contact"
+import { GetContactUseCase } from "../../contacts/get-contact"
 import { contactsRepository } from "./make-contacts-repository"
 
 

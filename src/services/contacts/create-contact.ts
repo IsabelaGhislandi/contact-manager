@@ -3,10 +3,8 @@ import { ContactsRepository, ContactWithPhones } from "../../repositories/contac
 import { InvalidCityFormatError } from "../errors/invalid-city-format-error"
 import { InvalidEmailFormatError } from "../errors/invalid-email-format-error"
 import { InvalidPhoneFormatError } from "../errors/invalid-phone-error"
-import { DuplicatePhoneNumbersError } from "../errors/duplicate-phone-error"
+import { DuplicatePhoneError } from "../errors/duplicate-phone-error"
 import { PhoneRequiredError } from "../errors/phone-required-error"
-import { UserAlreadyExistsError } from "../errors/user-already-exists-error"
-
 
 interface CreateContactUseCaseRequest {
     userId: string
@@ -42,7 +40,7 @@ export class CreateContactUseCase {
 
         const contactWithSameEmail = await this.contactsRepository.findByEmail(email)
         if (contactWithSameEmail) {
-            throw new UserAlreadyExistsError()
+            throw new Error('User with same email already exists')
         }
 
         if (!this.isValidCity(city)) {
@@ -55,7 +53,7 @@ export class CreateContactUseCase {
 
         const uniquePhones = [...new Set(phones)]
         if (uniquePhones.length !== phones.length) {
-            throw new DuplicatePhoneNumbersError()
+            throw new DuplicatePhoneError()
         }
 
         phones.forEach(phone => {

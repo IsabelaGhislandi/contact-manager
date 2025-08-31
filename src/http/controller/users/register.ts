@@ -1,7 +1,7 @@
 import z from "zod"
 import { Request, Response } from "express"
-import { UserAlreadyExistsError } from "../../services/errors/user-already-exists-error"
-import { makeRegisterUseCase } from "../../services/factories/make-register-use-case"
+import { UserAlreadyExistsError } from "../../../services/errors/user-already-exists-error"
+import { makeRegisterUseCase } from "../../../services/factories/contacts/make-register-use-case"
 
 export async function register(req: Request, res: Response) {
     try {

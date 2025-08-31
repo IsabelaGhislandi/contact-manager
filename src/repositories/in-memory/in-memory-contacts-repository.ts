@@ -123,18 +123,39 @@ export class InMemoryContactsRepository implements ContactsRepository {
         contact.updatedAt = new Date()
 
         // Update phones if provided
-        if (data.phones?.create) {
-            const phonesData = Array.isArray(data.phones.create) ? data.phones.create : [data.phones.create]
-            contact.phones = phonesData.map(phoneData => ({
-                id: this.nextPhoneId.toString(),
-                number: phoneData.number,
-                contactId: id,
-                createdAt: new Date(),
-                updatedAt: new Date(),
-            }))
-            this.nextPhoneId += contact.phones.length
+        if (data.phones) {
+            // Se há deleteMany, limpar telefones existentes
+            if (data.phones.deleteMany !== undefined) {
+                contact.phones = []
+            }
+            
+            // Se há create, adicionar novos telefones
+            if (data.phones.create) {
+                const phonesData = Array.isArray(data.phones.create) ? data.phones.create : [data.phones.create]
+                const newPhones = phonesData.map(phoneData => ({
+                    id: this.nextPhoneId.toString(),
+                    number: phoneData.number,
+                    contactId: id,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                }))
+                
+                contact.phones = [...contact.phones, ...newPhones]
+                this.nextPhoneId += newPhones.length
+            }
         }
 
         return contact
+    }
+
+    async delete(id: string): Promise<void> {
+        const contactIndex = this.items.findIndex(item => item.id === id && !item.deletedAt)
+        
+        if (contactIndex === -1) {
+            throw new Error("Contact not found")
+        }
+
+        // Soft delete - marcar como deletado
+        this.items[contactIndex].deletedAt = new Date()
     }
 }

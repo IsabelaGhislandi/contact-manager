@@ -1,7 +1,9 @@
-import { User } from "@prisma/client";
-import { UsersRepository } from "../../repositories/users-repository";
-import { InvalidCredentialErrors } from "../errors/invalid-credential-errors";
-import { compare } from "bcrypt";
+import { User } from "@prisma/client"
+import { UsersRepository } from "../../repositories/users-repository"
+import { InvalidCredentialErrors } from "../errors/invalid-credential-errors"
+import { compare } from "bcrypt"
+import jwt from 'jsonwebtoken'
+import { env } from "../../env"
 
 interface AuthenticateUseCaseRequest {
     email: string
@@ -9,22 +11,46 @@ interface AuthenticateUseCaseRequest {
 }
 
 interface AuthenticateUseCaseResponse {
-    user: User
+    user: {
+        id: string
+        name: string
+        email: string
+    }
+    token: string
 }
-export class AuthenticateUseCase {
-        constructor(
-            private usersRepository: UsersRepository
-        ) {}
 
-        async execute({ email, password }: AuthenticateUseCaseRequest): Promise<AuthenticateUseCaseResponse> {
-            const user = await this.usersRepository.findByEmail(email)
-            if (!user) {
-                throw new InvalidCredentialErrors()
-            }
-            const doesPasswordMatch = await compare(password, user.password)
-            if (!doesPasswordMatch) {
-                throw new InvalidCredentialErrors()
-            }
-            return { user }
+export class AuthenticateUseCase {
+    constructor(
+        private usersRepository: UsersRepository
+    ) {}
+
+    async execute({ email, password }: AuthenticateUseCaseRequest): Promise<AuthenticateUseCaseResponse> {
+        const user = await this.usersRepository.findByEmail(email)
+        
+        if (!user) {
+            throw new InvalidCredentialErrors()
         }
+        
+        const doesPasswordMatch = await compare(password, user.password)
+        
+        if (!doesPasswordMatch) {
+            throw new InvalidCredentialErrors()
+        }
+
+        // Gerar token JWT
+        const token = jwt.sign(
+            { sub: user.id },
+            env.JWT_SECRET,
+            { expiresIn: '7d' }
+        )
+
+        return { 
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email
+            },
+            token 
+        }
+    }
 }

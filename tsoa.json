@@ -1,0 +1,22 @@
+{
+  "entryFile": "src/app.ts",
+  "noImplicitAdditionalProperties": "throw-on-extras",
+  "controllerPathGlobs": ["src/controllers/**/*Controller.ts"],
+  "spec": {
+    "outputDirectory": "src/swagger",
+    "specVersion": 3,
+    "basePath": "/api",
+    "name": "swagger.json",
+    "info": {
+      "title": "Contact Manager API",
+      "version": "1.0.0",
+      "description": "API para gerenciar contatos de usuários"
+    }
+  },
+  "routes": {
+    "routesDir": "src/routes",
+    "routesFileName": "routes.ts",
+    "basePath": "/api",
+    "middleware": "express"
+  }
+}

@@ -1,4 +1,4 @@
-import { ListContactsUseCase } from "../contacts/list-contacts"
+import { ListContactsUseCase } from "../../contacts/list-contacts"
 import { contactsRepository } from "./make-contacts-repository"
 
 export function makeListContactsUseCase() {

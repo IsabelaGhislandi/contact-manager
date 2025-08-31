@@ -1,7 +1,9 @@
 import z from "zod"
 import { Request, Response } from "express"
-import { InvalidCredentialErrors } from "../../services/errors/invalid-credential-errors"
-import { makeAuthenticateUseCase } from "../../services/factories/make-authenticate-use-case"
+import jwt from "jsonwebtoken"
+import { InvalidCredentialErrors } from "../../../services/errors/invalid-credential-errors"
+import { makeAuthenticateUseCase } from "../../../services/factories/users/make-authenticate-use-case"
+import { env } from "../../../env"
 
 export async function authenticate(req: Request, res: Response) {
     try {
@@ -14,11 +16,24 @@ export async function authenticate(req: Request, res: Response) {
       
         const authenticateUseCase = makeAuthenticateUseCase()
         
-        const user = await authenticateUseCase.execute({ email, password })
+        const { user } = await authenticateUseCase.execute({ email, password })
+        
+
+        const token = jwt.sign({ 
+            sub: user.id 
+        }, 
+            env.JWT_SECRET,
+            { expiresIn: '7d' }
+        )
         
         return res.status(200).json({
             message: 'User authenticated successfully',
-            user
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email
+            },
+            token
         })
     } catch (error) {
         if (error instanceof z.ZodError) {
@@ -31,11 +46,14 @@ export async function authenticate(req: Request, res: Response) {
             })
         }
         if (error instanceof InvalidCredentialErrors) {
-            return res.status(400).json({
-                message: error.message
+            return res.status(401).json({
+                message: 'Email or password incorrect'
             })
         }
+        
         console.error('Authentication error:', error)
-        throw error
+        return res.status(500).json({
+            message: 'Internal server error'
+        })
     }
 }
