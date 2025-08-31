@@ -21,11 +21,21 @@ export async function authenticate(req: Request, res: Response) {
             user
         })
     } catch (error) {
+        if (error instanceof z.ZodError) {
+            return res.status(400).json({
+                message: 'Validation error',
+                errors: error.issues.map(issue => ({
+                    field: issue.path.join('.'),
+                    message: issue.message
+                }))
+            })
+        }
         if (error instanceof InvalidCredentialErrors) {
             return res.status(400).json({
                 message: error.message
             })
         }
+        console.error('Authentication error:', error)
         throw error
     }
 }

@@ -1,7 +1,7 @@
 import { describe, it, expect, test, beforeEach } from 'vitest'
 import { RegisterUseCase } from './register'
-import { InMemoryUsersRepository } from '../repositories/in-memory/in-memory-users-repository'
-import { UserAlreadyExistsError } from './errors/user-already-exists-error'
+import { InMemoryUsersRepository } from '../../repositories/in-memory/in-memory-users-repository'
+import { UserAlreadyExistsError } from '../errors/user-already-exists-error'
 
 let usersRepository: InMemoryUsersRepository
 let sut:   RegisterUseCase

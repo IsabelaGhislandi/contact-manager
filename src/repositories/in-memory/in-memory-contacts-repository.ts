@@ -1,63 +1,140 @@
-// src/repositories/in-memory/in-memory-contacts-repository.ts
-import { Contact } from "@prisma/client";
-import { ContactsRepository, ContactCreateData, ContactFilters } from "../contacts-repository";
+import { Contact, Phone, Prisma } from "@prisma/client"
+import { ContactsRepository, ContactWithPhones, ContactFilters } from "../contacts-repository"
 
 export class InMemoryContactsRepository implements ContactsRepository {
-    public items: Contact[] = []
-    private currentId = 1
+    public items: ContactWithPhones[] = []
+    private nextContactId = 1
+    private nextPhoneId = 1
 
-    async create(data: ContactCreateData): Promise<Contact> {
-        const contact: Contact = {
-            id: `contact-${this.currentId++}`,
+    async create(data: Prisma.ContactCreateInput): Promise<ContactWithPhones> {
+      const contactId = this.nextContactId.toString()
+      this.nextContactId++
+        
+        if (!data.user?.connect?.id) {
+            throw new Error("User ID is required")
+        }
+        
+        const contact: ContactWithPhones = {
+            id: contactId,
             name: data.name,
-            address: data.address,
+            address: data.address || "",
+            city: data.city || "",
             email: data.email,
-            userId: data.userId,
+            userId: data.user.connect.id, 
             createdAt: new Date(),
             updatedAt: new Date(),
             deletedAt: null,
+            phones: []
         }
-        
+
+        if (data.phones?.create) {
+          const phonesData = Array.isArray(data.phones.create) ? data.phones.create : [data.phones.create]
+          contact.phones = []
+          
+          phonesData.forEach(phoneData => {
+              contact.phones.push({
+                  id: this.nextPhoneId.toString(),
+                  number: phoneData.number,
+                  contactId: contactId,
+                  createdAt: new Date(),
+                  updatedAt: new Date(),
+              })
+              this.nextPhoneId++ 
+          })
+        }
         this.items.push(contact)
         return contact
     }
 
-    async findByEmail(email: string): Promise<Contact | null> {
-        return this.items.find(c => c.email === email && !c.deletedAt) || null
-    }
+    async findById(id: string): Promise<ContactWithPhones | null> {
+        const contact = this.items.find(item => item.id === id && !item.deletedAt)
 
-    async findById(id: string): Promise<Contact | null> {
-        return this.items.find(c => c.id === id) || null
-    }
+        if (!contact) {
+            return null
+        }
 
-    async findByIdAndUserId(id: string, userId: string): Promise<Contact | null> {
-        return this.items.find(c => c.id === id && c.userId === userId && !c.deletedAt) || null
-    }
-
-    async findMany(filters: ContactFilters): Promise<Contact[]> {
-        return this.items.filter(c => {
-            if (c.deletedAt || c.userId !== filters.userId) return false
-            if (filters.name && !c.name.toLowerCase().includes(filters.name.toLowerCase())) return false
-            if (filters.address && !c.address.toLowerCase().includes(filters.address.toLowerCase())) return false
-            if (filters.email && !c.email.toLowerCase().includes(filters.email.toLowerCase())) return false
-            return true
-        })
-    }
-
-    async update(id: string, data: Partial<ContactCreateData>): Promise<Contact> {
-        const contact = this.items.find(c => c.id === id)
-        if (!contact) throw new Error('Contact not found')
-        
-        Object.assign(contact, data, { updatedAt: new Date() })
         return contact
     }
 
-    async softDelete(id: string): Promise<void> {
-        const contact = this.items.find(c => c.id === id)
-        if (contact) contact.deletedAt = new Date()
+    async findByEmail(email: string): Promise<ContactWithPhones | null> {
+        const contact = this.items.find(item => item.email === email && !item.deletedAt)
+
+        if (!contact) {
+            return null
+        }
+
+        return contact
     }
 
-    async checkDuplicatePhone(contactId: string, phone: string): Promise<boolean> {
-        return false
+    async findByUserId(userId: string): Promise<ContactWithPhones[]> {
+        return this.items.filter(item => item.userId === userId && !item.deletedAt)
+    }
+
+    async findManyWithFilters(userId: string, filters: ContactFilters): Promise<ContactWithPhones[]> {
+        let contacts = this.items.filter(item => item.userId === userId && !item.deletedAt)
+
+        if (filters.name) {
+            contacts = contacts.filter(contact => 
+                contact.name.toLowerCase().includes(filters.name!.toLowerCase())
+            )
+        }
+
+        if (filters.address) {
+            contacts = contacts.filter(contact => 
+                contact.address.toLowerCase().includes(filters.address!.toLowerCase())
+            )
+        }
+
+        if (filters.email) {
+            contacts = contacts.filter(contact => 
+                contact.email.toLowerCase().includes(filters.email!.toLowerCase())
+            )
+        }
+
+        if (filters.city) {
+            contacts = contacts.filter(contact => 
+                contact.city.toLowerCase().includes(filters.city!.toLowerCase())
+            )
+        }
+
+        if (filters.phone) {
+            contacts = contacts.filter(contact => 
+                contact.phones.some(phone => phone.number.includes(filters.phone!))
+            )
+        }
+
+        return contacts
+    }
+
+    async update(id: string, data: Prisma.ContactUpdateInput): Promise<ContactWithPhones> {
+        const contactIndex = this.items.findIndex(item => item.id === id && !item.deletedAt)
+        
+        if (contactIndex === -1) {
+            throw new Error("Contact not found")
+        }
+
+        const contact = this.items[contactIndex]
+
+        if (data.name) contact.name = data.name as string
+        if (data.address) contact.address = data.address as string
+        if (data.city) contact.city = data.city as string
+        if (data.email) contact.email = data.email as string
+        if (data.deletedAt !== undefined) contact.deletedAt = data.deletedAt as Date | null
+        contact.updatedAt = new Date()
+
+        // Update phones if provided
+        if (data.phones?.create) {
+            const phonesData = Array.isArray(data.phones.create) ? data.phones.create : [data.phones.create]
+            contact.phones = phonesData.map(phoneData => ({
+                id: this.nextPhoneId.toString(),
+                number: phoneData.number,
+                contactId: id,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            }))
+            this.nextPhoneId += contact.phones.length
+        }
+
+        return contact
     }
 }

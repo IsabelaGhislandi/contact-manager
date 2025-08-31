@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach} from 'vitest'    
-import { InMemoryUsersRepository } from '../repositories/in-memory/in-memory-users-repository'
+import { InMemoryUsersRepository } from '../../repositories/in-memory/in-memory-users-repository'
 import { AuthenticateUseCase } from './authtenticate'
 import { hash } from 'bcrypt'
-import { InvalidCredentialErrors } from './errors/invalid-credential-errors'
+import { InvalidCredentialErrors } from '../errors/invalid-credential-errors'
 
 let usersRepository: InMemoryUsersRepository
 let sut: AuthenticateUseCase

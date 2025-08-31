@@ -24,7 +24,11 @@ export async function register(req: Request, res: Response) {
     } catch (error) {
         if (error instanceof z.ZodError) {
             return res.status(400).json({
-                message: 'Validation error'
+                message: 'Validation error',
+                errors: error.issues.map(issue => ({
+                    field: issue.path.join('.'),
+                    message: issue.message
+                }))
             })
         }
         if (error instanceof UserAlreadyExistsError) {
