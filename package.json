@@ -1,10 +1,12 @@
 {
   "name": "nodejs",
   "version": "1.0.0",
-  "description": "RFS(REQUESITOS FUNCIONAIS)\r - [ ] Deve ser possível cadastrar um contato com nome, endereço, telefone e email.\r - [ ] Deve ser possível listar os contatos dessa agenda com filtros por nome, endereço, email, telefone\r - [ ] Ao exibir contato trazer uma mensagem sobre temperatura e condição do tempo na cidade do contato.",
+  "description": "API to manage contacts with weather information",
   "main": "index.js",
   "scripts": {
-    "start:dev": "tsx watch src/server.ts",
+    "start:dev": "npm run tsoa:build && tsx watch src/server.ts",
+    "tsoa:build": "tsoa spec-and-routes",
+    "generate:controllers": "node scripts/auto-generate-controllers.js",
     "start": "node build/server.js",
     "build": "tsup src --out-dir build",
     "test": "vitest run --project unit",

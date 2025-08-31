@@ -5,11 +5,11 @@ import { makeGetContactUseCase } from "../../../services/factories/contacts/make
 export async function getContact(req: Request, res: Response) {
   try {
     const { id } = req.params;
-    const userId = req.userId!; // agora vem do middleware JWT
+    const userId = req.userId!;
 
     const getContactUseCase = makeGetContactUseCase();
 
-    const { contact } = await getContactUseCase.execute({
+    const { contact, weatherSuggestion } = await getContactUseCase.execute({
       contactId: id,
       userId
     });
@@ -27,7 +27,14 @@ export async function getContact(req: Request, res: Response) {
         })),
         createdAt: contact.createdAt,
         updatedAt: contact.updatedAt
-      }
+      },
+      weather: weatherSuggestion.weather ? {
+        temperature: weatherSuggestion.weather.temperature,
+        condition: weatherSuggestion.weather.condition,
+        description: weatherSuggestion.weather.description,
+        city: weatherSuggestion.weather.city
+      } : null,
+      suggestion: weatherSuggestion.message
     });
 
   } catch (error) {

@@ -3,7 +3,7 @@ import { InMemoryContactsRepository } from '../../repositories/in-memory/in-memo
 import { UpdateContactUseCase } from './update-contact'
 import { ContactNotFoundError } from '../errors/contact-not-found-error'
 import { InvalidEmailFormatError } from '../errors/invalid-email-format-error'
-import { DuplicatePhoneNumbersError } from '../errors/duplicate-phone-error'
+import { DuplicatePhoneError } from '../errors/duplicate-phone-error'
 
 let contactsRepository: InMemoryContactsRepository
 let sut: UpdateContactUseCase
@@ -103,7 +103,7 @@ describe('Update Contact Use Case', () => {
                 userId: 'user-1',
                 phones: ['11999999999', '11999999999']
             })
-        ).rejects.toBeInstanceOf(DuplicatePhoneNumbersError)
+        ).rejects.toBeInstanceOf(DuplicatePhoneError)
     })
 
     it('should not be able to update contact from another user', async () => {

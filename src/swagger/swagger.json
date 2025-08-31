@@ -1,0 +1,547 @@
+{
+	"openapi": "3.0.0",
+	"components": {
+		"examples": {},
+		"headers": {},
+		"parameters": {},
+		"requestBodies": {},
+		"responses": {},
+		"schemas": {
+			"UserResponse": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"email",
+					"createdAt",
+					"updatedAt"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreateUserRequest": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"name",
+					"email",
+					"password"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"LoginResponse": {
+				"properties": {
+					"message": {
+						"type": "string"
+					},
+					"token": {
+						"type": "string"
+					},
+					"user": {
+						"$ref": "#/components/schemas/UserResponse"
+					}
+				},
+				"required": [
+					"message",
+					"token",
+					"user"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"LoginRequest": {
+				"properties": {
+					"email": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"email",
+					"password"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"PhoneResponse": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"number": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"number"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ContactResponse": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"city": {
+						"type": "string"
+					},
+					"phones": {
+						"items": {
+							"$ref": "#/components/schemas/PhoneResponse"
+						},
+						"type": "array"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"address",
+					"email",
+					"city",
+					"phones",
+					"createdAt",
+					"updatedAt"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreateContactRequest": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"phones": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"city": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"name",
+					"address",
+					"email",
+					"phones",
+					"city"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"WeatherInfo": {
+				"properties": {
+					"temperature": {
+						"type": "number",
+						"format": "double"
+					},
+					"condition": {
+						"type": "string"
+					},
+					"suggestion": {
+						"type": "string"
+					},
+					"error": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ContactWithWeatherResponse": {
+				"properties": {
+					"contact": {
+						"$ref": "#/components/schemas/ContactResponse"
+					},
+					"weather": {
+						"$ref": "#/components/schemas/WeatherInfo"
+					}
+				},
+				"required": [
+					"contact",
+					"weather"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UpdateContactRequest": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"phones": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"city": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			}
+		},
+		"securitySchemes": {
+			"jwt": {
+				"type": "apiKey",
+				"name": "Authorization",
+				"in": "header"
+			}
+		}
+	},
+	"info": {
+		"title": "swagger.json",
+		"version": "1.0.0",
+		"description": "API to manage contacts with weather information",
+		"license": {
+			"name": "ISC"
+		},
+		"contact": {}
+	},
+	"paths": {
+		"/users": {
+			"post": {
+				"operationId": "CreateUser",
+				"responses": {
+					"201": {
+						"description": "Usuário criado com sucesso",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"user": {
+											"$ref": "#/components/schemas/UserResponse"
+										},
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"user",
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateUserRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/sessions": {
+			"post": {
+				"operationId": "Login",
+				"responses": {
+					"200": {
+						"description": "Login realizado com sucesso",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/LoginResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Authentication"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/LoginRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/contacts": {
+			"post": {
+				"operationId": "CreateContact",
+				"responses": {
+					"201": {
+						"description": "Contato criado com sucesso",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"contact": {
+											"$ref": "#/components/schemas/ContactResponse"
+										},
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"contact",
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Contacts"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateContactRequest"
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"operationId": "ListContacts",
+				"responses": {
+					"200": {
+						"description": "Lista de contatos",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"contacts": {
+											"items": {
+												"$ref": "#/components/schemas/ContactResponse"
+											},
+											"type": "array"
+										}
+									},
+									"required": [
+										"contacts"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Contacts"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/contacts/{id}": {
+			"get": {
+				"operationId": "GetContact",
+				"responses": {
+					"200": {
+						"description": "Contato encontrado com informações de clima",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ContactWithWeatherResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Contacts"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "UpdateContact",
+				"responses": {
+					"200": {
+						"description": "Contato atualizado com sucesso",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"contact": {
+											"$ref": "#/components/schemas/ContactResponse"
+										},
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"contact",
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Contacts"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateContactRequest"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteContact",
+				"responses": {
+					"204": {
+						"description": "Contato deletado com sucesso"
+					}
+				},
+				"tags": [
+					"Contacts"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		}
+	},
+	"servers": [
+		{
+			"url": "/"
+		}
+	]
+}

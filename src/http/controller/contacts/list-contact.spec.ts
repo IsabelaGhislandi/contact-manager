@@ -9,7 +9,6 @@ describe("List Contacts (e2e)", () => {
   let contactId2: string;
 
   beforeAll(async () => {
-    // Criar usuário
     await request(app).post("/users").send({
       name: "John Doe",
       email: "john@example.com",
@@ -23,7 +22,6 @@ describe("List Contacts (e2e)", () => {
 
     token = loginResponse.body.token;
 
-    // Criar contatos
     const contact1 = await request(app)
       .post("/contacts")
       .set("Authorization", `Bearer ${token}`)

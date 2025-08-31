@@ -15,6 +15,8 @@ interface AuthenticateUseCaseResponse {
         id: string
         name: string
         email: string
+        createdAt: Date
+        updatedAt: Date
     }
     token: string
 }
@@ -37,7 +39,7 @@ export class AuthenticateUseCase {
             throw new InvalidCredentialErrors()
         }
 
-        // Gerar token JWT
+        // Generate JWT token
         const token = jwt.sign(
             { sub: user.id },
             env.JWT_SECRET,
@@ -48,7 +50,9 @@ export class AuthenticateUseCase {
             user: {
                 id: user.id,
                 name: user.name,
-                email: user.email
+                email: user.email,
+                createdAt: user.createdAt,
+                updatedAt: user.updatedAt
             },
             token 
         }

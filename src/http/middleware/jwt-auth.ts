@@ -23,7 +23,7 @@ export function jwtAuth(req: Request, res: Response, next: NextFunction) {
         })
     }
     
-    // Formato esperado: "Bearer jwt-token-here"
+    // expected format: "Bearer jwt-token-here"
     const [, token] = authHeader.split(' ')
     
     if (!token) {
@@ -41,5 +41,34 @@ export function jwtAuth(req: Request, res: Response, next: NextFunction) {
         return res.status(401).json({ 
             message: 'Token de acesso inválido' 
         })
+    }
+}
+
+// Authentication function for tsoa
+export async function expressAuthentication(
+    request: Request,
+    securityName: string,
+    scopes?: string[]
+): Promise<any> {
+    if (securityName === 'jwt') {
+        const authHeader = request.headers.authorization
+        
+        if (!authHeader) {
+            throw new Error('Token de acesso requerido')
+        }
+        
+        const [, token] = authHeader.split(' ')
+        
+        if (!token) {
+            throw new Error('Token de acesso malformado')
+        }
+        
+        try {
+            const decoded = jwt.verify(token, env.JWT_SECRET) as TokenPayload
+            request.userId = decoded.sub
+            return decoded
+        } catch (error) {
+            throw new Error('Token de acesso inválido')
+        }
     }
 }

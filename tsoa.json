@@ -1,22 +1,34 @@
 {
   "entryFile": "src/app.ts",
   "noImplicitAdditionalProperties": "throw-on-extras",
-  "controllerPathGlobs": ["src/controllers/**/*Controller.ts"],
+  "controllerPathGlobs": ["src/http/controller/**/*Controller.ts"],
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  },
   "spec": {
     "outputDirectory": "src/swagger",
     "specVersion": 3,
-    "basePath": "/api",
+    "basePath": "/",
     "name": "swagger.json",
     "info": {
       "title": "Contact Manager API",
       "version": "1.0.0",
-      "description": "API para gerenciar contatos de usuários"
+      "description": "API para gerenciamento de contatos com informações meteorológicas"
+    },
+    "securityDefinitions": {
+      "jwt": {
+        "type": "apiKey",
+        "name": "Authorization",
+        "in": "header"
+      }
     }
   },
   "routes": {
-    "routesDir": "src/routes",
+    "routesDir": "src/swagger",
     "routesFileName": "routes.ts",
-    "basePath": "/api",
-    "middleware": "express"
+    "basePath": "/",
+    "middleware": "express",
+    "authenticationModule": "src/http/middleware/jwt-auth.ts"
   }
 }

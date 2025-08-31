@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import { GetContactUseCase } from './get-contact'
 import { InMemoryContactsRepository } from '../../repositories/in-memory/in-memory-contacts-repository'
 import { ContactNotFoundError } from '../errors/contact-not-found-error'
+import { WeatherService } from '../weather/weather-service'
 
 let contactsRepository: InMemoryContactsRepository
 let sut: GetContactUseCase
@@ -9,7 +10,7 @@ let sut: GetContactUseCase
 describe('Get Contact Use Case', () => {
     beforeEach(() => {
         contactsRepository = new InMemoryContactsRepository()
-        sut = new GetContactUseCase(contactsRepository)
+        sut = new GetContactUseCase(contactsRepository, new WeatherService())
     })
 
     it('should be able to get a contact by id', async () => {

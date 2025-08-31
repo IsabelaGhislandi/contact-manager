@@ -35,7 +35,9 @@ export class RegisterUseCase {
         return {
             id: user.id,
             name: user.name,
-            email: user.email
+            email: user.email,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt
         }
     }
 

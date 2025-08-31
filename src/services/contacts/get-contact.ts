@@ -1,19 +1,21 @@
 import { ContactsRepository, ContactWithPhones } from "../../repositories/contacts-repository"
 import { ContactNotFoundError } from "../errors/contact-not-found-error"
+import { WeatherService, WeatherSuggestion } from "../weather/weather-service"
 
 interface GetContactUseCaseRequest {
     contactId: string
-    // Only Contacts by this user
     userId: string
 }
 
 interface GetContactUseCaseResponse {
     contact: ContactWithPhones
+    weatherSuggestion: WeatherSuggestion
 }
 
 export class GetContactUseCase {
     constructor(
-        private contactsRepository: ContactsRepository
+        private contactsRepository: ContactsRepository,
+        private weatherService: WeatherService  
     ) {}
 
     async execute({ 
@@ -27,13 +29,17 @@ export class GetContactUseCase {
             throw new ContactNotFoundError()
         }
 
-        // Only Contacts by this user
+        // Only contacts by this user
         if (contact.userId !== userId) {
-            throw new ContactNotFoundError() // Do not reveal that it exists, only that it was not found
+            throw new ContactNotFoundError()
         }
 
+        // Get weather information for the contact's city
+        const weatherSuggestion = await this.weatherService.getWeatherByCity(contact.city)
+
         return {
-            contact
+            contact,
+            weatherSuggestion
         }
     }
 }
