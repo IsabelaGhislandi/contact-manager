@@ -24,7 +24,8 @@ describe('Authenticate (e2e)', () => {
               id: expect.any(String),
               name: "John Doe",
               email: "john.doe@example.com"
-            }
+            },
+            timestamp: expect.any(String)
           })
     });
 })

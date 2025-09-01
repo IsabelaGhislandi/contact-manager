@@ -1,9 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { InMemoryContactsRepository } from '../../repositories/in-memory/in-memory-contacts-repository'
 import { UpdateContactUseCase } from './update-contact'
-import { ContactNotFoundError } from '../errors/contact-not-found-error'
-import { InvalidEmailFormatError } from '../errors/invalid-email-format-error'
-import { DuplicatePhoneError } from '../errors/duplicate-phone-error'
+import { ContactNotFoundError, InvalidEmailFormatError, InvalidCityFormatError, InvalidPhoneFormatError, DuplicatePhoneError, PhoneRequiredError, DuplicateEmailError } from "../errors"
 
 let contactsRepository: InMemoryContactsRepository
 let sut: UpdateContactUseCase
@@ -14,7 +12,7 @@ describe('Update Contact Use Case', () => {
         sut = new UpdateContactUseCase(contactsRepository)
     })
 
-    it('should be able to update a contact', async () => {
+    it('it should be able to update a contact', async () => {
         const createdContact = await contactsRepository.create({
             name: 'John Doe',
             address: '123 Main St',
@@ -52,7 +50,7 @@ describe('Update Contact Use Case', () => {
         expect(contact.phones[1].number).toEqual('11777777777')
     })
 
-    it('should not be able to update a non-existent contact', async () => {
+    it('it should not be able to update a non-existent contact', async () => {
         await expect(() =>
             sut.execute({
                 contactId: 'non-existent-id',
@@ -62,7 +60,7 @@ describe('Update Contact Use Case', () => {
         ).rejects.toBeInstanceOf(ContactNotFoundError)
     })
 
-    it('should not be able to update a contact with invalid email', async () => {
+    it('it should not be able to update a contact with invalid email', async () => {
         const createdContact = await contactsRepository.create({
             name: 'John Doe',
             address: '123 Main St',
@@ -84,7 +82,7 @@ describe('Update Contact Use Case', () => {
         ).rejects.toBeInstanceOf(InvalidEmailFormatError)
     })
 
-    it('should not be able to update a contact with duplicate phone numbers', async () => {
+    it('it should not be able to update a contact with duplicate phone numbers', async () => {
         const createdContact = await contactsRepository.create({
             name: 'John Doe',
             address: '123 Main St',
@@ -106,7 +104,7 @@ describe('Update Contact Use Case', () => {
         ).rejects.toBeInstanceOf(DuplicatePhoneError)
     })
 
-    it('should not be able to update contact from another user', async () => {
+    it('it should not be able to update contact from another user', async () => {
         const createdContact = await contactsRepository.create({
             name: 'John Doe',
             address: '123 Main St',

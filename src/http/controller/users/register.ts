@@ -1,41 +1,34 @@
-import z from "zod"
 import { Request, Response } from "express"
-import { UserAlreadyExistsError } from "../../../services/errors/user-already-exists-error"
+import { z } from "zod"
 import { makeRegisterUseCase } from "../../../services/factories/contacts/make-register-use-case"
+import { ErrorHandler } from "../../../utils/error-handler"
+
+const registerBodySchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Invalid email format"),
+  password: z.string().min(6, "Password must have at least 6 characters")
+})
 
 export async function register(req: Request, res: Response) {
-    try {
-        const registerBodySchema = z.object({
-            name: z.string(),
-            email: z.string().email(),
-            password: z.string().min(6, 'Password must have at least 6 characters')
-        })
+  try {
+    const { name, email, password } = registerBodySchema.parse(req.body)
 
-        const { name, email, password } = registerBodySchema.parse(req.body)
-      
-        const registerUseCase = makeRegisterUseCase()
-        
-        const user = await registerUseCase.execute({ name, email, password })
-        
-        return res.status(201).json({
-            message: 'User created successfully',
-            user
-        })
-    } catch (error) {
-        if (error instanceof z.ZodError) {
-            return res.status(400).json({
-                message: 'Validation error',
-                errors: error.issues.map(issue => ({
-                    field: issue.path.join('.'),
-                    message: issue.message
-                }))
-            })
-        }
-        if (error instanceof UserAlreadyExistsError) {
-            return res.status(409).json({
-                message: error.message
-            })
-        }
-        throw error
-    }
+    const registerUseCase = makeRegisterUseCase()
+    const user = await registerUseCase.execute({ name, email, password })
+
+    return res.status(201).json({
+      message: "User created successfully",
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt
+      },
+      timestamp: new Date().toISOString()
+    })
+
+  } catch (error) {
+    return ErrorHandler.handle(error, req, res)
+  }
 }

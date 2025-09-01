@@ -1,7 +1,7 @@
 import request from "supertest";
 import { describe, it, beforeAll, expect } from "vitest";
 import { app } from "../../../app";
-
+ 
 describe("Create Contact (e2e)", () => {
   let token: string;
 
@@ -20,7 +20,7 @@ describe("Create Contact (e2e)", () => {
     token = loginResponse.body.token;
   });
 
-  it("should create a contact successfully (integration test)", async () => {
+  it("it should create a contact successfully (integration test)", async () => {
     const response = await request(app)
       .post("/contacts")
       .set("Authorization", `Bearer ${token}`)

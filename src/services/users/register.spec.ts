@@ -1,7 +1,7 @@
-import { describe, it, expect, test, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { RegisterUseCase } from './register'
 import { InMemoryUsersRepository } from '../../repositories/in-memory/in-memory-users-repository'
-import { UserAlreadyExistsError } from '../errors/user-already-exists-error'
+import { InvalidUserPassword, UserAlreadyExistsError } from '../errors'
 
 let usersRepository: InMemoryUsersRepository
 let sut:   RegisterUseCase
@@ -11,7 +11,7 @@ describe('Register Use Case', () => {
         usersRepository = new InMemoryUsersRepository()
         sut = new RegisterUseCase(usersRepository)
     })
-    it('should be able to register', async () => {
+    it('it should be able to register', async () => {
         const user = await sut.execute({
             name: 'John Doe',
             email: 'john.doe@example.com',
@@ -23,7 +23,7 @@ describe('Register Use Case', () => {
        
     })
 
-    it('should not be able to register with same email twice', async () => {
+    it('it should not be able to register with same email twice', async () => {
         const email = 'john.doe@example.com'
 
        await sut.execute({
@@ -41,7 +41,7 @@ describe('Register Use Case', () => {
         ).rejects.toBeInstanceOf(UserAlreadyExistsError)
     })
 
-    it('should not be able to register with password less than 6 characters', async () => {
+    it('it should not be able to register with password less than 6 characters', async () => {
 
         await expect(() =>
             sut.execute({
@@ -49,6 +49,6 @@ describe('Register Use Case', () => {
                 email: 'john.doe@example.com',
                 password: '123'
             })
-        ).rejects.toThrow('Password must have at least 6 characters')
+        ).rejects.toBeInstanceOf(InvalidUserPassword)
     })
 })

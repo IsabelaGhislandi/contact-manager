@@ -4,3 +4,4 @@ build
 README.md
 coverage
 .gitignore
+dist

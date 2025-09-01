@@ -1,8 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'    
 import { CreateContactUseCase } from './create-contact'
 import { InMemoryContactsRepository } from '../../repositories/in-memory/in-memory-contacts-repository'
-import { InvalidEmailFormatError } from '../errors/invalid-email-format-error'
-import { InvalidPhoneFormatError } from '../errors/invalid-phone-error'
+import { InvalidEmailFormatError, InvalidCityFormatError, InvalidPhoneFormatError, DuplicatePhoneError, PhoneRequiredError, DuplicateEmailError } from "../errors"
 
 let contactsRepository: InMemoryContactsRepository  
 let sut: CreateContactUseCase
@@ -124,7 +123,7 @@ describe('Create Contact Use Case', () => {
                     phones: ['11888888888'],
                     city: 'Boston'
                 })
-            ).rejects.toThrow('User with same email already exists')
+            ).rejects.toBeInstanceOf(DuplicateEmailError)
         })
     })
 
@@ -139,7 +138,7 @@ describe('Create Contact Use Case', () => {
                     phones: ['11999999999'],
                     city: 'New York 123'
                 })
-            ).rejects.toThrow('City must contain only letters, spaces and accents')
+            ).rejects.toBeInstanceOf(InvalidCityFormatError)
         })
 
         it('should not accept city with special characters', async () => {
@@ -152,7 +151,7 @@ describe('Create Contact Use Case', () => {
                     phones: ['11999999999'],
                     city: 'New York@#$'
                 })
-            ).rejects.toThrow('City must contain only letters, spaces and accents')
+            ).rejects.toBeInstanceOf(InvalidCityFormatError)
         })
 
         it('should accept city with hyphens', async () => {
@@ -170,7 +169,7 @@ describe('Create Contact Use Case', () => {
     })
 
     describe('Phone Validation', () => {
-        it('should not be able to create a contact without phones', async () => {
+        it('it should not be able to create a contact without phones', async () => {
             await expect(() => 
                 sut.execute({
                     userId: 'user-1', 
@@ -180,7 +179,7 @@ describe('Create Contact Use Case', () => {
                     phones: [],
                     city: 'New York'
                 })
-            ).rejects.toThrow('Contact must have at least one phone number')
+            ).rejects.toBeInstanceOf(PhoneRequiredError)
         })
 
         it('should not be able to create a contact with duplicate phone numbers', async () => {
@@ -193,7 +192,7 @@ describe('Create Contact Use Case', () => {
                     phones: ['11999999999', '11999999999'],
                     city: 'New York'
                 })
-            ).rejects.toThrow('Duplicate phone numbers are not allowed')
+            ).rejects.toBeInstanceOf(DuplicatePhoneError)
         })
 
         it('should not accept phone with letters', async () => {
@@ -245,12 +244,12 @@ describe('Create Contact Use Case', () => {
                 city: 'New York'
             })
 
-            expect(contact.phones[0].number).toEqual('11999999999') // Limpo
+            expect(contact.phones[0].number).toEqual('11999999999') 
         })
     })
 
-    describe('Edge Cases', () => {
-        it('should handle minimum valid phone (10 digits)', async () => {
+    describe('Other Cases', () => {
+        it('it should handle minimum valid phone (10 digits)', async () => {
             const { contact } = await sut.execute({
                 userId: 'user-1', 
                 name: 'John Doe',
@@ -263,7 +262,7 @@ describe('Create Contact Use Case', () => {
             expect(contact.phones[0].number).toEqual('1199999999')
         })
 
-        it('should handle maximum valid phone (11 digits)', async () => {
+        it('it should handle maximum valid phone (11 digits)', async () => {
             const { contact } = await sut.execute({
                 userId: 'user-1', 
                 name: 'John Doe',
@@ -276,7 +275,7 @@ describe('Create Contact Use Case', () => {
             expect(contact.phones[0].number).toEqual('11999999999')
         })
 
-        it('should handle special characters in name and address', async () => {
+        it('it should handle special characters in name and address', async () => {
             const { contact } = await sut.execute({
                 userId: 'user-1', 
                 name: 'José da Silva Jr.',

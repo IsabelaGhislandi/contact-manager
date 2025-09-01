@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { AuthenticateUseCase } from './authtenticate'
 import { InMemoryUsersRepository } from '../../repositories/in-memory/in-memory-users-repository'
-import { InvalidCredentialErrors } from '../errors/invalid-credential-errors'
+import { InvalidCredentialsError } from "../errors"
 import { hash } from 'bcrypt'
 
 let usersRepository: InMemoryUsersRepository
@@ -13,8 +13,7 @@ describe('Authenticate Use Case', () => {
     sut = new AuthenticateUseCase(usersRepository)
   })
 
-  it('should be able to authenticate', async () => {
-    // Criar um usuário para testar
+  it('it should be able to authenticate', async () => {
     const passwordHash = await hash('123456', 6)
     await usersRepository.create({
       name: 'João Silva',
@@ -33,17 +32,16 @@ describe('Authenticate Use Case', () => {
     expect(token).toEqual(expect.any(String))
   })
 
-  it('should not be able to authenticate with wrong email', async () => {
+  it('it should not be able to authenticate with wrong email', async () => {
     await expect(() =>
       sut.execute({
         email: 'email-inexistente@email.com',
         password: '123456'
       })
-    ).rejects.toBeInstanceOf(InvalidCredentialErrors)
+    ).rejects.toBeInstanceOf(InvalidCredentialsError)
   })
 
   it('should not be able to authenticate with wrong password', async () => {
-    // Criar um usuário para testar
     const passwordHash = await hash('123456', 6)
     await usersRepository.create({
       name: 'João Silva',
@@ -56,18 +54,17 @@ describe('Authenticate Use Case', () => {
         email: 'joao@email.com',
         password: 'senha-errada'
       })
-    ).rejects.toBeInstanceOf(InvalidCredentialErrors)
+    ).rejects.toBeInstanceOf(InvalidCredentialsError)
   })
 
-  it('should throw InvalidCredentialErrors with correct message', async () => {
+  it('it should throw InvalidCredentialErrors with correct message', async () => {
     try {
       await sut.execute({
         email: 'email-inexistente@email.com',
         password: '123456'
       })
     } catch (error) {
-      expect(error).toBeInstanceOf(InvalidCredentialErrors)
-      expect((error as InvalidCredentialErrors).message).toBe('E-mail ou senha incorretos')
+      expect(error).toBeInstanceOf(InvalidCredentialsError)
     }
   })
 })

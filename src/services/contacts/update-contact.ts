@@ -1,10 +1,5 @@
 import { ContactsRepository, ContactWithPhones } from "../../repositories/contacts-repository"
-import { ContactNotFoundError } from "../errors/contact-not-found-error"
-import { InvalidEmailFormatError } from "../errors/invalid-email-format-error"
-import { InvalidPhoneFormatError } from "../errors/invalid-phone-error"
-import { InvalidCityFormatError } from "../errors/invalid-city-format-error"
-import { PhoneRequiredError } from "../errors/phone-required-error"
-import { DuplicatePhoneError } from "../errors/duplicate-phone-error"
+import { ContactNotFoundError,InvalidEmailFormatError, InvalidCityFormatError, InvalidPhoneFormatError, DuplicatePhoneError, PhoneRequiredError, DuplicateEmailError } from "../errors"
 
 interface UpdateContactUseCaseRequest {
     contactId: string
@@ -48,12 +43,12 @@ export class UpdateContactUseCase {
         if (email && email !== existingContact.email) {
             const contactWithSameEmail = await this.contactsRepository.findByEmail(email)
             if (contactWithSameEmail && contactWithSameEmail.id !== contactId) {
-                throw new Error('User with same email already exists')
+                throw new DuplicateEmailError(email)
             }
         }
 
         if (city && !this.isValidCity(city)) {
-            throw new InvalidCityFormatError()
+            throw new InvalidCityFormatError(city)
         }
 
         if (phones) {
@@ -63,12 +58,12 @@ export class UpdateContactUseCase {
 
             const uniquePhones = [...new Set(phones)]
             if (uniquePhones.length !== phones.length) {
-                throw new DuplicatePhoneError()
+                throw new DuplicatePhoneError() 
             }
 
             phones.forEach(phone => {
                 if (!this.isValidPhoneFormat(phone)) {
-                    throw new InvalidPhoneFormatError()
+                    throw new InvalidPhoneFormatError(phone)
                 }
             })
         }
@@ -81,7 +76,7 @@ export class UpdateContactUseCase {
         if (city) updateData.city = city
         
         if (phones) {
-            // Deletar telefones antigos e criar novos
+            // Delete old phones and create new ones
             updateData.phones = {
                 deleteMany: {},
                 create: phones.map(phone => ({

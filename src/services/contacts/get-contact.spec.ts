@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { GetContactUseCase } from './get-contact'
 import { InMemoryContactsRepository } from '../../repositories/in-memory/in-memory-contacts-repository'
-import { ContactNotFoundError } from '../errors/contact-not-found-error'
+import { ContactNotFoundError } from "../errors"
 import { WeatherService } from '../weather/weather-service'
 
 let contactsRepository: InMemoryContactsRepository
@@ -13,7 +13,7 @@ describe('Get Contact Use Case', () => {
         sut = new GetContactUseCase(contactsRepository, new WeatherService())
     })
 
-    it('should be able to get a contact by id', async () => {
+    it('it should be able to get a contact by id', async () => {
             const createdContact = await contactsRepository.create({
                 name: 'John Doe',
                 address: 'Rua das Flores, 123',
@@ -44,7 +44,7 @@ describe('Get Contact Use Case', () => {
             expect(contact.phones[1].number).toEqual('11888777666')
         })
 
-    it('should not be able to get a non-existent contact', async () => {
+    it('it should not be able to get a non-existent contact', async () => {
             await expect(() =>
                 sut.execute({
                     contactId: 'non-existent-id',
@@ -53,7 +53,7 @@ describe('Get Contact Use Case', () => {
             ).rejects.toBeInstanceOf(ContactNotFoundError)
         })
 
-        it('should not be able to get a contact from another user', async () => {
+        it('it should not be able to get a contact from another user', async () => {
             const createdContact = await contactsRepository.create({
                 name: 'John Doe',
                 address: 'Rua das Flores, 123',
@@ -75,7 +75,7 @@ describe('Get Contact Use Case', () => {
             ).rejects.toBeInstanceOf(ContactNotFoundError)
         })
 
-        it('should not be able to get a soft deleted contact', async () => {
+        it('it should not be able to get a soft deleted contact', async () => {
             const createdContact = await contactsRepository.create({
                 name: 'John Doe',
                 address: 'Rua das Flores, 123',

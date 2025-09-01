@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { InMemoryContactsRepository } from '../../repositories/in-memory/in-memory-contacts-repository'
 import { ListContactsUseCase } from './list-contacts'
+import { InvalidEmailFormatError, InvalidCityFormatError, InvalidPhoneFormatError, DuplicatePhoneError, PhoneRequiredError, DuplicateEmailError } from "../errors"
 
 let contactsRepository: InMemoryContactsRepository
 let sut: ListContactsUseCase
@@ -11,7 +12,7 @@ describe('List Contacts Use Case', () => {
         sut = new ListContactsUseCase(contactsRepository)
     })
 
-    it('should be able to list all contacts for a user', async () => {
+    it('it should be able to list all contacts for a user', async () => {
             await contactsRepository.create({
                 name: 'John Doe',
                 address: 'Rua das Flores, 123',
@@ -61,7 +62,7 @@ describe('List Contacts Use Case', () => {
             expect(contacts.every(contact => contact.userId === 'user-1')).toBe(true)
         })
 
-        it('should return empty array when user has no contacts', async () => {
+        it('it should return empty array when user has no contacts', async () => {
             const { contacts } = await sut.execute({
                 userId: 'user-without-contacts'
             })
@@ -70,7 +71,7 @@ describe('List Contacts Use Case', () => {
             expect(contacts).toEqual([])
         })
 
-        it('should be able to filter contacts by name', async () => {
+        it('it should be able to filter contacts by name', async () => {
             await contactsRepository.create({
                 name: 'John Doe',
                 address: 'Rua das Flores, 123',
@@ -108,7 +109,7 @@ describe('List Contacts Use Case', () => {
             expect(contacts[0].name).toBe('John Doe')
         })
 
-        it('should be able to filter contacts by email', async () => {
+        it('it should be able to filter contacts by email', async () => {
             await contactsRepository.create({
                 name: 'John Doe',
                 address: 'Rua das Flores, 123',
@@ -146,7 +147,7 @@ describe('List Contacts Use Case', () => {
             expect(contacts[0].email).toBe('jane@gmail.com')
         })
 
-        it('should be able to filter contacts by phone number', async () => {
+        it('it should be able to filter contacts by phone number', async () => {
             await contactsRepository.create({
                 name: 'John Doe',
                 address: 'Rua das Flores, 123',
@@ -184,7 +185,7 @@ describe('List Contacts Use Case', () => {
             expect(contacts[0].phones[0].number).toBe('11999887766')
         })
 
-        it('should be able to filter contacts by address', async () => {
+        it('it should be able to filter contacts by address', async () => {
             await contactsRepository.create({
                 name: 'John Doe',
                 address: 'Rua das Flores, 123',
@@ -222,7 +223,7 @@ describe('List Contacts Use Case', () => {
             expect(contacts[0].address).toBe('Av. Paulista, 456')
         })
 
-        it('should be able to filter contacts by city', async () => {
+        it('it should be able to filter contacts by city', async () => {
             await contactsRepository.create({
                 name: 'John Doe',
                 address: 'Rua das Flores, 123',
@@ -260,7 +261,7 @@ describe('List Contacts Use Case', () => {
             expect(contacts[0].city).toBe('Rio de Janeiro')
         })
 
-        it('should be able to combine multiple filters', async () => {
+        it('it should be able to combine multiple filters', async () => {
             await contactsRepository.create({
                 name: 'John Doe',
                 address: 'Rua das Flores, 123',
@@ -300,7 +301,7 @@ describe('List Contacts Use Case', () => {
             expect(contacts[0].email).toBe('johnsmith@gmail.com')
         })
 
-    it('should not list soft deleted contacts', async () => {
+    it('it should not list soft deleted contacts', async () => {
 
             const createdContact = await contactsRepository.create({
                 name: 'John Doe',
@@ -341,8 +342,7 @@ describe('List Contacts Use Case', () => {
             expect(contacts.every(contact => !contact.deletedAt)).toBe(true)
         })
 
-        it('should not find soft deleted contacts even with filters', async () => {
-            // Criar contato
+        it('it should not find soft deleted contacts even with filters', async () => {
             const createdContact = await contactsRepository.create({
                 name: 'John Doe',
                 address: 'Rua das Flores, 123',

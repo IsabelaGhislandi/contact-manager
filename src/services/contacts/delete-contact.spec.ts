@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { InMemoryContactsRepository } from '../../repositories/in-memory/in-memory-contacts-repository'
 import { DeleteContactUseCase } from './delete-contact'
-import { ContactNotFoundError } from '../errors/contact-not-found-error'
+import { ContactNotFoundError } from "../errors"
 
 let contactsRepository: InMemoryContactsRepository
 let sut: DeleteContactUseCase
@@ -45,7 +45,7 @@ describe('Delete Contact Use Case', () => {
                 contactId: 'non-existent-id',
                 userId: 'user-1'
             })
-        ).rejects.toBeInstanceOf(ContactNotFoundError)
+        ).rejects.toBeInstanceOf(ContactNotFoundError)  
     })
 
     it('should not be able to delete a contact from another user', async () => {

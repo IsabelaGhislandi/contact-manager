@@ -1,5 +1,5 @@
 import { ContactsRepository } from "../../repositories/contacts-repository"
-import { ContactNotFoundError } from "../errors/contact-not-found-error"
+import { ContactNotFoundError } from "../errors"
 
 interface DeleteContactUseCaseRequest {
     contactId: string
@@ -14,7 +14,7 @@ export class DeleteContactUseCase {
     async execute({ 
         contactId, 
         userId 
-    }: DeleteContactUseCaseRequest): Promise<void> {
+    }: DeleteContactUseCaseRequest): Promise<{ deletedAt: Date }> {
         
         const contact = await this.contactsRepository.findById(contactId)
 
@@ -22,7 +22,9 @@ export class DeleteContactUseCase {
             throw new ContactNotFoundError()
         }
 
-        // Soft delete
+        const deletedAt = new Date()
         await this.contactsRepository.delete(contactId)
+        
+        return { deletedAt }
     }
 }

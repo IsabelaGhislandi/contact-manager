@@ -1,5 +1,5 @@
 import { ContactsRepository, ContactWithPhones } from "../../repositories/contacts-repository"
-import { ContactNotFoundError } from "../errors/contact-not-found-error"
+import { ContactNotFoundError, InvalidEmailFormatError, InvalidCityFormatError, InvalidPhoneFormatError, DuplicatePhoneError, PhoneRequiredError, DuplicateEmailError } from "../errors"
 import { WeatherService, WeatherSuggestion } from "../weather/weather-service"
 
 interface GetContactUseCaseRequest {
@@ -29,12 +29,10 @@ export class GetContactUseCase {
             throw new ContactNotFoundError()
         }
 
-        // Only contacts by this user
         if (contact.userId !== userId) {
             throw new ContactNotFoundError()
         }
 
-        // Get weather information for the contact's city
         const weatherSuggestion = await this.weatherService.getWeatherByCity(contact.city)
 
         return {

@@ -7,14 +7,12 @@ describe("Update Contact (e2e)", () => {
   let contactId: string;
 
   beforeAll(async () => {
-    // Criar usuário
     await request(app).post("/users").send({
       name: "John Doe",
       email: "john.update@example.com",
       password: "123456",
     });
 
-    // Fazer login
     const loginResponse = await request(app).post("/sessions").send({
       email: "john.update@example.com",
       password: "123456",
@@ -22,7 +20,6 @@ describe("Update Contact (e2e)", () => {
 
     token = loginResponse.body.token;
 
-    // Criar um contato para ser atualizado
     const contactResponse = await request(app)
       .post("/contacts")
       .set("Authorization", `Bearer ${token}`)
@@ -71,7 +68,6 @@ describe("Update Contact (e2e)", () => {
     expect(response.status).toBe(200);
     expect(response.body.contact.name).toBe("Maria Santos Updated");
     expect(response.body.contact.city).toBe("Brasília");
-    // Outros campos devem permanecer inalterados
     expect(response.body.contact.email).toBe("maria.santos@example.com");
   });
 
@@ -106,7 +102,7 @@ describe("Update Contact (e2e)", () => {
       .put(`/contacts/${contactId}`)
       .set("Authorization", `Bearer ${token}`)
       .send({
-        phones: ["11999999999", "11999999999"], // números duplicados
+        phones: ["11999999999", "11999999999"],
       });
 
     expect(response.status).toBe(400);
@@ -118,7 +114,7 @@ describe("Update Contact (e2e)", () => {
       .put(`/contacts/${contactId}`)
       .set("Authorization", `Bearer ${token}`)
       .send({
-        phones: [], // array vazio
+        phones: [],
       });
 
     expect(response.status).toBe(400);
@@ -136,14 +132,12 @@ describe("Update Contact (e2e)", () => {
   });
 
   it("should not update contact from another user", async () => {
-    // Criar outro usuário
     await request(app).post("/users").send({
       name: "Jane Doe",
       email: "jane@example.com",
       password: "123456",
     });
 
-    // Login com o outro usuário
     const otherUserLogin = await request(app).post("/sessions").send({
       email: "jane@example.com",
       password: "123456",
@@ -151,7 +145,6 @@ describe("Update Contact (e2e)", () => {
 
     const otherUserToken = otherUserLogin.body.token;
 
-    // Tentar atualizar o contato do primeiro usuário
     const response = await request(app)
       .put(`/contacts/${contactId}`)
       .set("Authorization", `Bearer ${otherUserToken}`)

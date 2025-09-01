@@ -1,5 +1,5 @@
 import { UsersRepository } from "../../repositories/users-repository"
-import { UserAlreadyExistsError } from "../errors/user-already-exists-error"
+import { InvalidUserPassword, UserAlreadyExistsError } from "../errors"
 import { hash } from "bcrypt"
 
 interface RegisterUseCaseRequest {
@@ -15,7 +15,7 @@ export class RegisterUseCase {
         name, email, password}: RegisterUseCaseRequest) {
         
         if (password.length < 6) {
-            throw new Error('Password must have at least 6 characters')
+            throw new InvalidUserPassword()
         }
         
         const userWithSameEmail = await this.usersRepository.findByEmail(email)

@@ -4,9 +4,7 @@
   "description": "API to manage contacts with weather information",
   "main": "index.js",
   "scripts": {
-    "start:dev": "npm run tsoa:build && tsx watch src/server.ts",
-    "tsoa:build": "tsoa spec-and-routes",
-    "generate:controllers": "node scripts/auto-generate-controllers.js",
+    "start:dev": "tsx watch src/server.ts",
     "start": "node build/server.js",
     "build": "tsup src --out-dir build",
     "test": "vitest run --project unit",
@@ -26,6 +24,7 @@
     "@types/jsonwebtoken": "9.0.10",
     "@types/node": "^24.3.0",
     "@types/supertest": "6.0.3",
+    "@types/swagger-jsdoc": "6.0.4",
     "@types/swagger-ui-express": "4.1.8",
     "eslint": "9.34.0",
     "globals": "16.3.0",
@@ -43,7 +42,6 @@
   },
   "dependencies": {
     "@prisma/client": "6.15.0",
-    "@types/swagger-jsdoc": "6.0.4",
     "@vitest/coverage-v8": "3.2.4",
     "@vitest/ui": "3.2.4",
     "bcrypt": "6.0.0",
@@ -52,7 +50,6 @@
     "jsonwebtoken": "9.0.2",
     "swagger-jsdoc": "6.2.8",
     "swagger-ui-express": "5.0.1",
-    "tsoa": "6.6.0",
     "zod": "4.1.4"
   }
 }

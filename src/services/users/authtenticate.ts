@@ -1,6 +1,5 @@
-import { User } from "@prisma/client"
 import { UsersRepository } from "../../repositories/users-repository"
-import { InvalidCredentialErrors } from "../errors/invalid-credential-errors"
+import { InvalidCredentialsError } from "../errors"
 import { compare } from "bcrypt"
 import jwt from 'jsonwebtoken'
 import { env } from "../../env"
@@ -30,16 +29,17 @@ export class AuthenticateUseCase {
         const user = await this.usersRepository.findByEmail(email)
         
         if (!user) {
-            throw new InvalidCredentialErrors()
+            throw new InvalidCredentialsError()
         }
         
         const doesPasswordMatch = await compare(password, user.password)
         
         if (!doesPasswordMatch) {
-            throw new InvalidCredentialErrors()
+            throw new InvalidCredentialsError()
         }
 
         // Generate JWT token
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const token = jwt.sign(
             { sub: user.id },
             env.JWT_SECRET,

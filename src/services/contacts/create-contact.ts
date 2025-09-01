@@ -1,10 +1,5 @@
-// src/services/create-contact.ts
 import { ContactsRepository, ContactWithPhones } from "../../repositories/contacts-repository"
-import { InvalidCityFormatError } from "../errors/invalid-city-format-error"
-import { InvalidEmailFormatError } from "../errors/invalid-email-format-error"
-import { InvalidPhoneFormatError } from "../errors/invalid-phone-error"
-import { DuplicatePhoneError } from "../errors/duplicate-phone-error"
-import { PhoneRequiredError } from "../errors/phone-required-error"
+import { InvalidEmailFormatError, InvalidCityFormatError, InvalidPhoneFormatError, DuplicatePhoneError, PhoneRequiredError, DuplicateEmailError } from "../errors"
 
 interface CreateContactUseCaseRequest {
     userId: string
@@ -21,9 +16,7 @@ interface CreateContactUseCaseResponse {
 
 export class CreateContactUseCase {
     constructor(
-        private contactsRepository: ContactsRepository
-    ) {}
-
+        private contactsRepository: ContactsRepository) {}
 
     async execute({ 
         userId, 
@@ -35,16 +28,17 @@ export class CreateContactUseCase {
     }: CreateContactUseCaseRequest): Promise<CreateContactUseCaseResponse> {
 
         if (!this.isValidEmail(email)) {
-            throw new InvalidEmailFormatError()
+            throw new InvalidEmailFormatError(email)
         }
 
         const contactWithSameEmail = await this.contactsRepository.findByEmail(email)
+
         if (contactWithSameEmail) {
-            throw new Error('User with same email already exists')
+            throw new DuplicateEmailError(email)
         }
 
         if (!this.isValidCity(city)) {
-            throw new InvalidCityFormatError()
+            throw new InvalidCityFormatError(city)
         }
 
         if (!phones || phones.length === 0) {
