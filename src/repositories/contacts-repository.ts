@@ -15,7 +15,7 @@ export interface ContactFilters {
 export interface ContactsRepository {
     create(data: Prisma.ContactCreateInput): Promise<ContactWithPhones>
     update(id: string, data: Prisma.ContactUpdateInput): Promise<ContactWithPhones>
-    delete(id: string): Promise<void>
+    delete(id: string, deletedAt?: Date): Promise<void>
     findById(id: string): Promise<ContactWithPhones | null>
     findByEmail(email: string): Promise<ContactWithPhones | null>
     findByUserId(userId: string): Promise<ContactWithPhones[]>

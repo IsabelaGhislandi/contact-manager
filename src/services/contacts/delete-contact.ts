@@ -23,7 +23,7 @@ export class DeleteContactUseCase {
         }
 
         const deletedAt = new Date()
-        await this.contactsRepository.delete(contactId)
+        await this.contactsRepository.delete(contactId, deletedAt)
         
         return { deletedAt }
     }

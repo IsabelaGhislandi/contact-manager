@@ -27,11 +27,11 @@ export class PrismaContactsRepository implements ContactsRepository {
         return contact
     }
 
-    async delete(id: string): Promise<void> {
+    async delete(id: string, deletedAt?: Date): Promise<void> {
         await prisma.contact.update({
             where: { id },
             data: {
-                deletedAt: new Date()
+                deletedAt: deletedAt || new Date()
             }
         })
     }

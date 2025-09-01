@@ -148,7 +148,7 @@ export class InMemoryContactsRepository implements ContactsRepository {
         return contact
     }
 
-    async delete(id: string): Promise<void> {
+    async delete(id: string, deletedAt?: Date): Promise<void> {
         const contactIndex = this.items.findIndex(item => item.id === id && !item.deletedAt)
         
         if (contactIndex === -1) {
@@ -156,6 +156,6 @@ export class InMemoryContactsRepository implements ContactsRepository {
         }
 
         // Soft delete - marcar como deletado
-        this.items[contactIndex].deletedAt = new Date()
+        this.items[contactIndex].deletedAt = deletedAt || new Date()
     }
 }
