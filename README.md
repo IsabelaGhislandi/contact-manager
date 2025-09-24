@@ -9,7 +9,7 @@
 
 ## 🎯 Sobre o Projeto
 
-Esta API foi desenvolvida para gerenciar uma agenda telefônica moderna, oferecendo operações CRUD completas para contatos com integração inteligente de dados meteorológicos. Ao visualizar um contato, a API consulta automaticamente as condições climáticas da cidade do contato e fornece sugestões personalizadas de atividades.
+Esta API foi desenvolvida para gerenciar uma agenda telefônica, oferecendo operações CRUD completas para contatos com integração de dados meteorológicos. Ao visualizar um contato, a API consulta automaticamente as condições climáticas da cidade do contato e fornece sugestões personalizadas de atividades.
 
 ### ✨ Funcionalidades Principais
 
