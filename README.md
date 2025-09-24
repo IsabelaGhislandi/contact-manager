@@ -1,6 +1,6 @@
 # 📱 Contacts API - Agenda Telefônica
 
-> API REST moderna para gerenciamento de agenda telefônica com integração de dados meteorológicos
+> API REST para gerenciamento de agenda telefônica com integração de dados meteorológicos
 
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
